@@ -6,8 +6,8 @@
   "scripts": {
     "start": "nodemon server.js"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": ["todo-list", "mongodb"],
+  "author": "Onah Destiny C",
   "license": "ISC",
   "dependencies": {
     "cors": "^2.8.5",
