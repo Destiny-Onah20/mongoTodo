@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 const app = require("./app");
 const port = process.env.PORT
 const databaseUrl = process.env.DATABASE;
-console.log("dacker");
+console.log(databaseUrl);
 
 mongoose.connect(databaseUrl, {
   useUnifiedTopology : true,
@@ -18,5 +18,6 @@ mongoose.connect(databaseUrl, {
 }).catch((err)=>{
   console.log(err.message);
 })
+
 
 
