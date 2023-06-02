@@ -4,7 +4,6 @@ const mongoose = require("mongoose");
 const app = require("./app");
 const port = process.env.PORT
 const databaseUrl = process.env.DATABASE;
-console.log(databaseUrl);
 
 mongoose.connect(databaseUrl, {
   useUnifiedTopology : true,
