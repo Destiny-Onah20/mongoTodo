@@ -1,12 +1,19 @@
 const todoModel = require("../models/todo.model");
+const userModel = require("../models/user.model")
 
-exports.createTodo = async(req,res)=>{
+exports.createTodo = async (req, res) => {
+  console.log(req.file)
   try {
-    // const { tasks } = req.body;
-    const addTodo = await todoModel.create(req.body);
+    const userId = req.params.userId;
+    const theUser = await userModel.findById(userId);
+    const data = new todoModel(req.body)
+    data.user = theUser._id;
+    await data.save()
+    theUser.todo.push(data);
+    await theUser.save();
     return res.status(201).json({
       message: "Added new task.",
-      data: addTodo
+      data: data
     })
   } catch (error) {
     res.status(400).json({
@@ -15,17 +22,23 @@ exports.createTodo = async(req,res)=>{
   }
 };
 
-exports.done = async(req,res)=>{
+exports.done = async (req, res) => {
   try {
     const id = req.params.id;
-    const turnTrue = await todoModel.findById(id);
-    turnTrue.completed = true
-    await turnTrue.save()
+    const userId = req.params.userId;
+    const theTask = await todoModel.findById(id);
+    if (theTask.user == userId) {
+      theTask.completed = true
+      await theTask.save()
       return res.status(200).json({
         message: "This task has been completed.",
-        data: turnTrue
+        data: theTask
       })
-    
+    } else {
+      return res.status(400).json({
+        message: "Not authorized."
+      })
+    }
   } catch (error) {
     res.status(400).json({
       message: error.message
@@ -33,7 +46,7 @@ exports.done = async(req,res)=>{
   }
 };
 
-exports.allTodo = async(req,res)=>{
+exports.allTodo = async (req, res) => {
   try {
     const all = await todoModel.find();
     res.status(200).json({
@@ -48,52 +61,70 @@ exports.allTodo = async(req,res)=>{
   }
 };
 
-exports.editTodo = async(req,res)=>{
+exports.editTodo = async (req, res) => {
   try {
     const todoId = req.params.todoId;
-    const edited = await todoModel.findByIdAndUpdate(todoId, req.body);
+    const userId = req.params.userId;
+    const theTaskToUpdate = await todoModel.findById(todoId);
+    if (theTaskToUpdate.user == userId) {
+      const edited = await todoModel.findByIdAndUpdate(todoId, req.body);
       return res.status(200).json({
         message: "Task editted Successfully.",
         data: edited
-      }) 
-  } catch (error) {
-    res.status(400).json({
-      message: error.message
-    })
-  }
-};
-
-exports.deleteTodo = async ( req , res ) => {
-  try {
-    const todoId = req.params.todoId;
-    await todoModel.findByIdAndDelete(todoId) ;
-    return res.status(200).json({
-      message: "Deleted successfully",
-  })
-  } catch (error) {
-    res.status(400).json({
-      message: error.message
-    })
-  }
-};
-
-exports.deleteDone = async ( req , res ) => {
-  try {
-      await todoModel.deleteMany({completed: true});
-      return res.status(200).json({
-        message: "All done tasks deleted successfully"
       })
+    } else {
+      return res.status(400).json({
+        message: "Not authorized."
+      })
+    }
 
-  } catch ( error ) {
+  } catch (error) {
     res.status(400).json({
       message: error.message
     })
   }
 };
 
-exports.deleteAllTask = async ( req , res ) => {
+exports.deleteTodo = async (req, res) => {
   try {
-    await todoModel.deleteMany({all: true});
+    const userId = req.params.userId;
+    const todoId = req.params.todoId;
+    const theTaskToDelete = await todoModel.findById(todoId);
+    if (theTaskToDelete.user == userId) {
+      await todoModel.findByIdAndDelete(todoId);
+      return res.status(200).json({
+        message: "Deleted successfully",
+      })
+    } else {
+      return res.status(400).json({
+        message: "Not authorized."
+      })
+    }
+  } catch (error) {
+    res.status(400).json({
+      message: error.message
+    })
+  }
+};
+
+exports.deleteDone = async (req, res) => {
+  try {
+
+    await todoModel.deleteMany({ completed: true });
+    return res.status(200).json({
+      message: "All done tasks deleted successfully"
+    })
+  } catch (error) {
+    res.status(400).json({
+      message: error.message
+    })
+  }
+};
+
+exports.deleteAllTask = async (req, res) => {
+  try {
+
+    await todoModel.deleteMany({ all: true });
     res.status(200).json({
       message: "All tasks deleted."
     })
