@@ -12,8 +12,12 @@ const todoSchema = new mongoose.Schema({
   all: {
     type: Boolean,
     default: true
+  },
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "users"
   }
-},{
+}, {
   timestamps: true
 });
 
