@@ -1,5 +1,5 @@
 const todoModel = require("../models/todo.model");
-const userModel = require("../models/user.model")
+const userModel = require("../models/users.model")
 
 exports.createTodo = async (req, res) => {
   console.log(req.file)
