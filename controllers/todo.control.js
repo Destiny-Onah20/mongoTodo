@@ -6,6 +6,11 @@ exports.createTodo = async (req, res) => {
   try {
     const userId = req.params.userId;
     const theUser = await userModel.findById(userId);
+    if (!theUser) {
+      return res.status(400).json({
+        message: "User does not exist."
+      })
+    }
     const data = new todoModel(req.body)
     data.user = theUser._id;
     await data.save()
