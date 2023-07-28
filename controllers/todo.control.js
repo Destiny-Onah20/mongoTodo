@@ -53,7 +53,7 @@ exports.done = async (req, res) => {
 
 exports.allTodo = async (req, res) => {
   try {
-    const all = await todoModel.find();
+    const all = await todoModel.aggregate([{ $sample: { size: 10 } }]);
     res.status(200).json({
       message: "All todo",
       length: all.length,

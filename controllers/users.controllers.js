@@ -34,6 +34,11 @@ exports.getUserData = async (req, res) => {
   try {
     const userId = req.params.userId;
     const theUser = await userModel.findById(userId).populate("todo");
+    if (theUser.todo[0] === 0) {
+      return res.status(404).jsom({
+        message: "To task yet."
+      })
+    }
     return res.status(200).json({
       length: theUser.todo.length,
       data: theUser.todo,
